@@ -8,6 +8,10 @@ Este lançamento ainda não contém todos os elementos SVG. Contudo, contém boa
 
 ### Referências:
 
-- Eisenberg, J. D.; Bellamy-Royds, A. SVG Essentials, Second Edition. O'Reilly, 2015.
+- BELLAMY-ROYDS, A.; CAGLE, K. *SVG Colors, Patterns & Gradients: Painting Vector Graphics*. O'Reilly, 2016.
 
-- Scalable Vector Graphics (SVG) 1.1 (Second Edition), W3C Recommendation 16 August 2011. Disponível em: <https://www.w3.org/TR/SVG11/>
+- EISENBERG, J. D.; BELLAMY-ROYDS, A. *SVG Essentials*, Second Edition. O'Reilly, 2015.
+
+- LIBBY, A. *Beginning SVG: A Practical Introduction to SVG using Real-World Examples*. Apress, 2018.
+
+- W3C *Scalable Vector Graphics (SVG) 1.1 (Second Edition)*, W3C Recommendation 16 August 2011. Disponível em: <https://www.w3.org/TR/SVG11/>
