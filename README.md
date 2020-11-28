@@ -10,6 +10,8 @@ Este lançamento ainda não contém todos os elementos SVG. Contudo, contém boa
 
 - BELLAMY-ROYDS, A.; CAGLE, K. *SVG Colors, Patterns & Gradients: Painting Vector Graphics*. O'Reilly, 2016.
 
+- BELLAMY-ROYDS, A.; CAGLE, K.; STOREY, D. *Using SVG with CSS3 and HTML5: Vector Graphics for Web Design*, Second Release. O'Reilly, 2018.
+
 - EISENBERG, J. D.; BELLAMY-ROYDS, A. *SVG Essentials*, Second Edition. O'Reilly, 2015.
 
 - LIBBY, A. *Beginning SVG: A Practical Introduction to SVG using Real-World Examples*. Apress, 2018.
