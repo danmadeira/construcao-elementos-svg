@@ -3,11 +3,22 @@
 /**
  * Uma classe para construir os elementos gráficos do SVG versão 1.1, na gramática XML.
  * Cada função retorna um elemento SVG, container ou gráfico, com os respectivos atributos.
+ * 
+ * @author Daniel Madeira <dmadeira@gmail.com>
+ * @license https://opensource.org/licenses/GPL-3.0 GNU General Public License version 3
+ * @version v2.1.1
  */
 class GraficoVetorialEscalavel
 {
     
     private $grafico;
+    private $grupo = '';
+    private $definicao = '';
+    
+    public function iniciar($width = 1366, $height = 768, $namespace = true, $version = '1.1', $lang = '', $xlink = false, $viewbox = '', $preserveaspectratio = '', $presentation = '', $id = '', $class = '', $style = '')
+    {
+        $this->grafico = $this->svg11($width, $height, $namespace, $version, $lang, $xlink, $viewbox, $preserveaspectratio, $presentation, $id, $class, $style);
+    }
     
     // doctype = "false | true | S | H"
     // xml = "false | true"
@@ -18,23 +29,32 @@ class GraficoVetorialEscalavel
         if(empty($this->grafico)) {
             $this->iniciar();
         }
-        
-        $d = '';
-        $x = '';
-        
         if ($doctype !== false) {
             $d = $this->dtd($doctype);
+        } else {
+            $d = '';
         }
         if ($xml) {
             $x = $this->xml10($standalone, $encoding);
+        } else {
+            $x = '';
         }
         
-        return $d . $x . $this->grafico . $this->svgFim();
+        return $x . $d . $this->grafico . $this->svgFim();
     }
     
-    public function iniciar($width = 1366, $height = 768, $namespace = true, $version = '1.1', $lang = '', $xlink = false, $id = '', $viewbox = '', $preserveaspectratio = '')
+    private function obterGrupo()
     {
-        $this->grafico = $this->svg11($width, $height, $namespace, $version, $lang, $xlink, $id, $viewbox, $preserveaspectratio);
+        $grupo = $this->grupo;
+        $this->grupo = '';
+        return $grupo;
+    }
+    
+    private function obterDefinicao()
+    {
+        $definicao = $this->definicao;
+        $this->definicao = '';
+        return $definicao;
     }
     
     // standalone = "no | yes"
@@ -77,7 +97,7 @@ class GraficoVetorialEscalavel
     // contentScriptType = "content-type"
     // contentStyleType = "content-type" 
     // zoomAndPan = "disable | magnify"
-    private function svg11($width = 1366, $height = 768, $namespace = true, $version = '1.1', $lang = '', $xlink = false, $id = '', $viewbox = '', $preserveaspectratio = '')
+    private function svg11($width = 1366, $height = 768, $namespace = true, $version = '1.1', $lang = '', $xlink = false, $viewbox = '', $preserveaspectratio = '', $presentation = '', $id = '', $class = '', $style = '')
     {
         if ($namespace) {
             $ns = ' xmlns="http://www.w3.org/2000/svg"';
@@ -99,17 +119,24 @@ class GraficoVetorialEscalavel
         } else {
             $link = '';
         }
-        if (!empty($id)) {
-            $id = ' id="' . $id . '"';
-        }
         if (!empty($viewbox)) {
             $viewbox = ' viewBox="' . $viewbox . '"';
         }
         if (!empty($preserveaspectratio)) {
             $preserveaspectratio = ' preserveAspectRatio="' . $preserveaspectratio . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
+        if (!empty($class)) {
+            $class = ' class="' . $class . '"';
+        }
+        if (!empty($style)) {
+            $style = ' style="' . $style . '"';
+        }
+        $attributes = $this->obterAtributosApresentacao($presentation);
         
-        return '<svg' . $ns . $ver . $lang . $link . $id . ' width="' . $width . '" height="' . $height . '"' . $viewbox . $preserveaspectratio . '>' . PHP_EOL;
+        return '<svg' . $ns . $ver . $lang . $link . $id . $attributes . $class . $style . ' width="' . $width . '" height="' . $height . '"' . $viewbox . $preserveaspectratio . '>' . PHP_EOL;
     }
     
     private function svgFim()
@@ -127,7 +154,7 @@ class GraficoVetorialEscalavel
         $this->grafico .= '<desc>' . $content . '</desc>' . PHP_EOL;
     }
     
-    public function definicao($content, $presentation = '', $class = '', $style = '', $transform = '')
+    public function definicao($presentation = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
@@ -140,7 +167,7 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<defs' . $attributes . $class . $style . $transform . '>' . $content . '</defs>';
+        $this->grafico .= '<defs' . $attributes . $class . $style . $transform . '>' . PHP_EOL . $this->obterDefinicao() . '</defs>' . PHP_EOL;
     }
     
     public function ligacao($namespace = true, $href = '', $rel = '', $media = '', $type = '')
@@ -177,7 +204,7 @@ class GraficoVetorialEscalavel
         $this->grafico .= '<script' . $href . $content . PHP_EOL;
     }
     
-    public function grupo($content, $id = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function grupo($id = '', $presentation = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($id)) {
             $id = ' id="' . $id . '"';
@@ -193,7 +220,7 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<g' . $id . $attributes . $class . $style . $transform . '>' . PHP_EOL . $content . PHP_EOL . '</g>' . PHP_EOL;
+        $this->grafico .= '<g' . $id . $attributes . $class . $style . $transform . '>' . PHP_EOL . $this->obterGrupo() . '</g>' . PHP_EOL;
     }
     
     // viewBox = "<min-x> <min-y> <width> <height>"
@@ -258,7 +285,7 @@ class GraficoVetorialEscalavel
     
     // d = "path data"
     // pathLength = "<number>"
-    public function caminho($d, $id = '', $pathlength = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function caminho($d, $id = '', $pathlength = '', $presentation = '', $class = '', $style = '', $transform = '', $defs = false)
     {
         if (!empty($id)) {
             $id = ' id="' . $id . '"';
@@ -277,7 +304,13 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<path' . $id . ' d="' . $d . '"' . $pathlength . $attributes . $class . $style . $transform . ' />';
+        $caminho = '<path' . $id . ' d="' . $d . '"' . $pathlength . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        
+        if ($defs) {
+            $this->definicao .= $caminho;
+        } else {
+            $this->grafico .= $caminho;
+        }
     }
     
     // <color> = white = rgb(255,255,255) = rgb(100%,100%,100%) = #fff = #ffffff
@@ -412,45 +445,7 @@ class GraficoVetorialEscalavel
     // rotate = "<list-of-numbers>"
     // textLength = "<length>"
     // lengthAdjust = "spacing | spacingAndGlyphs"
-    public function texto($x, $y, $content, $dx, $dy, $rotate = '', $textlength = '', $lengthadjust = '', $presentation = '', $class = '', $style = '', $transform = '')
-    {
-        if (!empty($dx) or is_numeric($dx)) {
-            $dx = ' dx="' . $dx . '"';
-        }
-        if (!empty($dy) or is_numeric($dy)) {
-            $dy = ' dy="' . $dy . '"';
-        }
-        if (!empty($rotate)) {
-            $rotate = ' rotate="' . $rotate . '"';
-        }
-        if (!empty($textlength)) {
-            $textlength = ' textLength="' . $textlength . '"';
-        }
-        if (!empty($lengthadjust)) {
-            $lengthadjust = ' lengthAdjust="' . $lengthadjust . '"';
-        }
-        if (!empty($class)) {
-            $class = ' class="' . $class . '"';
-        }
-        if (!empty($style)) {
-            $style = ' style="' . $style . '"';
-        }
-        if (!empty($transform)) {
-            $transform = ' transform="' . $transform . '"';
-        }
-        $attributes = $this->obterAtributosApresentacao($presentation);
-        
-        $this->grafico .= '<text x="' . $x . '" y="' . $y . '"' . $dx . $dy . $rotate . $textlength . $lengthadjust . $attributes . $class . $style . $transform . '>' . $content . '</text>' . PHP_EOL;
-    }
-    
-    // x = "<list-of-coordinates>"
-    // y = "<list-of-coordinates>"
-    // dx = "<list-of-lengths>"
-    // dy = "<list-of-lengths>"
-    // rotate = "<list-of-numbers>"
-    // textLength = "<length>"
-    // lengthAdjust = "spacing|spacingAndGlyphs"
-    public function textoAjustado($content, $x = '', $y = '', $dx = '', $dy = '', $rotate = '', $textlength = '', $lengthadjust = '', $presentation = '', $class = '', $style = '')
+    public function texto($content, $x = '', $y = '', $dx = '', $dy = '', $rotate = '', $textlength = '', $lengthadjust = '', $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($x) or is_numeric($x)) {
             $x = ' x="' . $x . '"';
@@ -473,6 +468,56 @@ class GraficoVetorialEscalavel
         if (!empty($lengthadjust)) {
             $lengthadjust = ' lengthAdjust="' . $lengthadjust . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
+        if (!empty($class)) {
+            $class = ' class="' . $class . '"';
+        }
+        if (!empty($style)) {
+            $style = ' style="' . $style . '"';
+        }
+        if (!empty($transform)) {
+            $transform = ' transform="' . $transform . '"';
+        }
+        $attributes = $this->obterAtributosApresentacao($presentation);
+        
+        $this->grafico .= '<text' . $x . $y . $dx . $dy . $rotate . $textlength . $lengthadjust . $attributes . $id . $class . $style . $transform . '>' . PHP_EOL . $content . PHP_EOL . '</text>' . PHP_EOL;
+    }
+    
+    // x = "<list-of-coordinates>"
+    // y = "<list-of-coordinates>"
+    // dx = "<list-of-lengths>"
+    // dy = "<list-of-lengths>"
+    // rotate = "<list-of-numbers>"
+    // textLength = "<length>"
+    // lengthAdjust = "spacing|spacingAndGlyphs"
+    public function textoAjustado($content, $x = '', $y = '', $dx = '', $dy = '', $rotate = '', $textlength = '', $lengthadjust = '', $presentation = '', $id = '', $class = '', $style = '')
+    {
+        if (!empty($x) or is_numeric($x)) {
+            $x = ' x="' . $x . '"';
+        }
+        if (!empty($y) or is_numeric($y)) {
+            $y = ' y="' . $y . '"';
+        }
+        if (!empty($dx) or is_numeric($dx)) {
+            $dx = ' dx="' . $dx . '"';
+        }
+        if (!empty($dy) or is_numeric($dy)) {
+            $dy = ' dy="' . $dy . '"';
+        }
+        if (!empty($rotate)) {
+            $rotate = ' rotate="' . $rotate . '"';
+        }
+        if (!empty($textlength)) {
+            $textlength = ' textLength="' . $textlength . '"';
+        }
+        if (!empty($lengthadjust)) {
+            $lengthadjust = ' lengthAdjust="' . $lengthadjust . '"';
+        }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -481,14 +526,34 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<tspan' . $x . $y . $dx . $dy . $rotate . $textlength . $lengthadjust . $attributes . $class . $style . '>' . $content . '</tspan>';
+        return '<tspan' . $x . $y . $dx . $dy . $rotate . $textlength . $lengthadjust . $attributes . $id . $class . $style . '>' . $content . '</tspan>';
+    }
+    
+    // xlink:href = "<iri>"
+    public function textoReferencia($xlinkhref = '', $presentation = '', $id = '', $class = '', $style = '')
+    {
+        if (!empty($xlinkhref)) {
+            $xlinkhref = ' xlink:href="' . $xlinkhref . '"';
+        }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
+        if (!empty($class)) {
+            $class = ' class="' . $class . '"';
+        }
+        if (!empty($style)) {
+            $style = ' style="' . $style . '"';
+        }
+        $attributes = $this->obterAtributosApresentacao($presentation);
+        
+        return '<tref' . $xlinkhref . $attributes . $id . $class . $style . ' />' . PHP_EOL;
     }
     
     // xlink:href = "<iri>"
     // startOffset = "<length>"
     // method = "align | stretch"
     // spacing = "auto | exact"
-    public function textoCaminho($content, $xlinkhref = '', $startoffset = '', $method = '', $spacing = '', $presentation = '', $class = '', $style = '')
+    public function textoCaminho($content, $xlinkhref = '', $startoffset = '', $method = '', $spacing = '', $presentation = '', $id = '', $class = '', $style = '')
     {
         if (!empty($xlinkhref)) {
             $xlinkhref = ' xlink:href="' . $xlinkhref . '"';
@@ -502,6 +567,9 @@ class GraficoVetorialEscalavel
         if (!empty($spacing)) {
             $spacing = ' spacing="' . $spacing . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -510,7 +578,7 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<textPath' . $xlinkhref . $startoffset . $method . $spacing . $attributes . $class . $style . '>' . $content . '</textPath>' . PHP_EOL;
+        return '<textPath' . $xlinkhref . $startoffset . $method . $spacing . $attributes . $id . $class . $style . '>' . $content . '</textPath>';
     }
     
     // horiz-origin-x = "<number>"
@@ -778,7 +846,7 @@ class GraficoVetorialEscalavel
     // height = "<length>"
     // rx = "<length>"
     // ry = "<length>"
-    public function retangulo($x = '', $y = '', $width = '', $height = '', $rx = '', $ry = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function retangulo($x = '', $y = '', $width = '', $height = '', $rx = '', $ry = '', $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($x) or is_numeric($x)) {
             $x = ' x="' . $x . '"';
@@ -798,6 +866,9 @@ class GraficoVetorialEscalavel
         if (!empty($ry) or is_numeric($ry)) {
             $ry = ' ry="' . $ry . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -809,13 +880,13 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<rect' . $x . $y . $width . $height . $rx . $ry . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $this->grafico .= '<rect' . $x . $y . $width . $height . $rx . $ry . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
     }
     
     // cx = "<coordinate>"
     // cy = "<coordinate>"
     // r = "<length>"
-    public function circulo($cx = '', $cy = '', $r = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function circulo($cx = '', $cy = '', $r = '', $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($cx) or is_numeric($cx)) {
             $cx = ' cx="' . $cx . '"';
@@ -826,6 +897,9 @@ class GraficoVetorialEscalavel
         if (!empty($r) or is_numeric($r)) {
             $r = ' r="' . $r . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -837,14 +911,14 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<circle' . $cx . $cy . $r . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $this->grafico .= '<circle' . $cx . $cy . $r . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
     }
     
     // cx = "<coordinate>"
     // cy = "<coordinate>"
     // rx = "<length>"
     // ry = "<length>"
-    public function elipse($cx = '', $cy = '', $rx = '', $ry = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function elipse($cx = '', $cy = '', $rx = '', $ry = '', $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($cx) or is_numeric($cx)) {
             $cx = ' cx="' . $cx . '"';
@@ -858,6 +932,9 @@ class GraficoVetorialEscalavel
         if (!empty($ry) or is_numeric($ry)) {
             $ry = ' ry="' . $ry . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -869,14 +946,14 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<ellipse' . $cx . $cy . $rx . $ry . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $this->grafico .= '<ellipse' . $cx . $cy . $rx . $ry . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
     }
     
     // x1 = "<coordinate>"
     // y1 = "<coordinate>"
     // x2 = "<coordinate>"
     // y2 = "<coordinate>"
-    public function linha($x1 = '', $y1 = '', $x2 = '', $y2 = '', $presentation = '', $class = '', $style = '', $transform = '')
+    public function linha($x1 = '', $y1 = '', $x2 = '', $y2 = '', $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
         if (!empty($x1) or is_numeric($x1)) {
             $x1 = ' x1="' . $x1 . '"';
@@ -890,6 +967,9 @@ class GraficoVetorialEscalavel
         if (!empty($y2) or is_numeric($y2)) {
             $y2 = ' y2="' . $y2 . '"';
         }
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -901,12 +981,15 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<line' . $x1 . $y1 . $x2 . $y2 . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $this->grafico .= '<line' . $x1 . $y1 . $x2 . $y2 . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
     }
     
     // points = "<list-of-points>"
-    public function polilinha($points, $presentation = '', $class = '', $style = '', $transform = '')
+    public function polilinha($points, $presentation = '', $id = '', $class = '', $style = '', $transform = '')
     {
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -918,12 +1001,15 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<polyline points="' . $points . '"' . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $this->grafico .= '<polyline points="' . $points . '"' . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
     }
     
     // points = "<list-of-points>"
-    public function poligono($points, $presentation = '', $class = '', $style = '', $transform = '')
+    public function poligono($points, $presentation = '', $id = '', $class = '', $style = '', $transform = '', $agroup = false)
     {
+        if (!empty($id)) {
+            $id = ' id="' . $id . '"';
+        }
         if (!empty($class)) {
             $class = ' class="' . $class . '"';
         }
@@ -935,7 +1021,13 @@ class GraficoVetorialEscalavel
         }
         $attributes = $this->obterAtributosApresentacao($presentation);
         
-        $this->grafico .= '<polygon points="' . $points . '"' . $attributes . $class . $style . $transform . ' />' . PHP_EOL;
+        $poligono = '<polygon points="' . $points . '"' . $attributes . $id . $class . $style . $transform . ' />' . PHP_EOL;
+        
+        if ($agroup) {
+            $this->grupo .= $poligono;
+        } else {
+            $this->grafico .= $poligono;
+        }
     }
     
     // x = "<coordinate>"
