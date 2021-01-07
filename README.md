@@ -4,13 +4,15 @@ Uma classe em PHP para construção dos elementos gráficos da linguagem SVG 1.1
 
 Este lançamento ainda não contém todos os elementos SVG. Contudo, contém boa parte dos elementos gráficos, incluindo seus principais atributos.
 
-:point_right: Esta classe foi utilizada em [Modelo SVG para labirinto 3D](https://github.com/danmadeira/labirinto)
+:point_right: Esta classe foi utilizada em [Modelo SVG para labirinto 3D](https://github.com/danmadeira/labirinto) e em [Bandeira Nacional em PHP](https://github.com/danmadeira/bandeira-nacional-em-php)
 
 ### Referências:
 
 - BELLAMY-ROYDS, A.; CAGLE, K. *SVG Colors, Patterns & Gradients: Painting Vector Graphics*. O'Reilly, 2016.
 
 - BELLAMY-ROYDS, A.; CAGLE, K.; STOREY, D. *Using SVG with CSS3 and HTML5: Vector Graphics for Web Design*, Second Release. O'Reilly, 2018.
+
+- COWBURN, P. e col. *Manual do PHP*. PHP Documentation Group. 25 de Dezembro de 2020. Disponível em: <https://www.php.net/manual/pt_BR/index.php>
 
 - EISENBERG, J. D.; BELLAMY-ROYDS, A. *SVG Essentials*, Second Edition. O'Reilly, 2015.
 
